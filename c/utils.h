@@ -9,6 +9,12 @@
 #include <assert.h>
 #include <string.h>
 
+#define SWAP(T, a, b) \
+  do {                \
+    T tmp = a;        \
+    a = b;            \
+    b = tmp;          \
+  } while(0)          \
 
 #define ARRAY_LEN(arr) (sizeof((arr))/sizeof((arr)[0]))
 
