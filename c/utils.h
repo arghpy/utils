@@ -1,3 +1,5 @@
+// Heavily inspired by Tsoding: https://github.com/tsoding/nob.h
+// Thank you!
 /*
  * This will always be included.
  * This is used in order to not include it multiple times.
@@ -8,6 +10,11 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
+
+#define BREAK asm("int3")
+#define UNUSED(x) (void)(x)
+#define TODO(message) do { fprintf(stderr, "%s:%d: TODO: %s\n", __FILE__, __LINE__, message); abort(); } while(0)
+#define UNREACHABLE(message) do { fprintf(stderr, "%s:%d: UNREACHABLE: %s\n", __FILE__, __LINE__, message); abort(); } while(0)
 
 #define SWAP(T, a, b) \
   do {                \
@@ -116,29 +123,29 @@
     (ll_head_ptr) = NULL;                 \
   } while(0)                          \
 
-#define ut_ll_push(NodeName, ll_head_ptr, val, ll_tail_ptr) \
-  do {                                                      \
-    NodeName *t = malloc(sizeof(NodeName));                 \
-    if (!t) fprintf(stderr, "Could not request memory.\n"); \
-    else {                                                  \
-      t->prev  = NULL;                                      \
-      t->value = (val);                                     \
-      t->next  = NULL;                                      \
-      if ((ll_head_ptr) == NULL) {                          \
-        (ll_head_ptr) = t;                                  \
-        (ll_tail_ptr) = t;                                  \
-      } else {                                              \
-        NodeName *c = (ll_head_ptr);                        \
-        while (c->next != NULL) {                           \
-          c = c->next;                                      \
-        }                                                   \
-        c->next = t;                                        \
-        t->prev = c;                                        \
-                                                            \
-        (ll_tail_ptr) = t;                                  \
-      }                                                     \
-    }                                                       \
-  } while(0)                                                \
+#define ut_ll_push(NodeName, ll_head_ptr, val, ll_tail_ptr)  \
+  do {                                                       \
+    NodeName *ll = malloc(sizeof(NodeName));                 \
+    if (!ll) fprintf(stderr, "Could not request memory.\n"); \
+    else {                                                   \
+      ll->prev  = NULL;                                      \
+      ll->value = (val);                                     \
+      ll->next  = NULL;                                      \
+      if ((ll_head_ptr) == NULL) {                           \
+        (ll_head_ptr) = ll;                                  \
+        (ll_tail_ptr) = ll;                                  \
+      } else {                                               \
+        NodeName *c = (ll_head_ptr);                         \
+        while (c->next != NULL) {                            \
+          c = c->next;                                       \
+        }                                                    \
+        c->next = ll;                                        \
+        ll->prev = c;                                        \
+                                                             \
+        (ll_tail_ptr) = ll;                                  \
+      }                                                      \
+    }                                                        \
+  } while(0)                                                 \
 
 #endif // UT_H
 
@@ -153,6 +160,7 @@
 
 // Includes
 #include <stdio.h>
+#include <ctype.h>
 
 // Declarations
 UTDEF void ut_strrev(char *str);
